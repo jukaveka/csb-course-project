@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head lang="en">
+        <meta charset="UTF-8" />
+        <title>Signup</title>
+    </head>
+    <body>
+      <h1> Signup </h1>
+
+      <p style="color: red;"> {{ error }} </p>
+      <form method="POST" action="/signup/">
+        {% csrf_token %}
+        <p>
+          <label> Username</label>
+          <br />
+          <input type="text" name="username" id="username"/>
+        </p>
+        <p>
+          <label> Password </label>
+          <br/>
+          <input type="text" name="password" id="password" />
+        </p>
+        <p>
+          <label> Verify password </label>
+          <br/>
+          <input type="text" name="passwordVerify" id="passwordVerify" />
+        </p>
+        <p>
+          <input type="submit" value="Signup" />  
+        </p>
+      </form>
+      <p> Already have an user? </p>
+      <a href="/login/"> Login </a>
+    </body>
+</html>

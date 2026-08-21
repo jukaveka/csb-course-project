@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head lang="en">
+        <meta charset="UTF-8" />
+        <title>Homepage</title>
+    </head>
+    <body>
+      <h1> Töttöröö </h1>
+      <h3> Listaus </h3>
+      <p>
+      </p>
+      <p>
+        <form method="GET" action="/logout/">
+          {% csrf_token %}
+          <input type="submit" value="logout" />
+        </form>
+      </p>
+    </body>
+</html>

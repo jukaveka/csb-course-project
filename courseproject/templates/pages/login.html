@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head lang="en">
+        <meta charset="UTF-8" />
+        <title>Login</title>
+    </head>
+    <body>
+      <h1> Login </h1>
+      <p style="color: red;"> {{ error }} </p>
+      <form method="POST" action="/login/">
+        {% csrf_token %}
+        <p>
+          <label> Username</label>
+          <br />
+          <input type="text" name="username" id="username"/>
+        </p>
+        <p>
+          <label> Password </label>
+          <br/>
+          <input type="text" name="password" id="password" />
+        </p>
+        <p>
+          <input type="submit" value="Login" />  
+        </p>
+        <p> Do not have an user?  </p>
+        <a href="/signup/"> Signup </a>
+      </form>
+    </body>
+</html>
