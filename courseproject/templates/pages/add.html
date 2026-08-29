@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+    <head lang="en">
+        <meta charset="UTF-8" />
+        <title> Add new resource </title>
+    </head>
+
+    <body>
+
+      <p>
+        <a href="/"> Back to home </a>
+      </p>
+
+      <h1> Add resource </h1>
+
+      <p>
+        <form method="POST" action="/add/" id="resource-form">
+          {% csrf_token %}
+
+          <p>
+            <label for="url"> URL address to image resource </label> <br/>
+            <input type="text" name="url" id="url" required />
+          </p>
+          <p>
+
+          </p>
+          <p>
+            <label for="name"> Resource name </label> <br/>
+            <input type="text" name="name" id="name" required />
+          </p>
+
+          <p>
+            <label for="notes"> Description and notes about the resource </label> <br/>
+            <textarea form="resource-form" rows="10" cols="50" name="notes" id="notes"></textarea>
+          </p>
+
+          <p>
+            <input type="submit" value="Submit" />
+          </p>
+
+        </form>
+
+      </p>
+
+      <br/><br/>
+
+      <p>
+        <form method="GET" action="/logout/">
+          {% csrf_token %}
+          <input type="submit" value="logout" />
+        </form>
+      </p>
+    </body>
+</html>

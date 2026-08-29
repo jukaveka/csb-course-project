@@ -23,4 +23,7 @@ urlpatterns = [
     path('login/', views.loginView, name="login"),
     path('signup/', views.signupView, name="signup"),
     path('logout/', views.logoutView, name="logout"),
+    path('add/', views.addView, name="add"),
+    path('resources/', views.resourcesView, name="resources"),
+    path('resources/<int:resource_id>/', views.resourceView),
 ]

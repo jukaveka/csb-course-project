@@ -2,17 +2,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     <head lang="en">
         <meta charset="UTF-8" />
-        <title>Homepage</title>
+        <title> {{ resource.name }} </title>
     </head>
     <body>
-      <h1> Töttöröö </h1>
+      <a href="/resources/"> Back to resources </a>
+      <h3> {{ resource.name }} </h3>
+      <img src={{resource.url}} />
+      <p> {{ resource.notes }} </p>
       <p>
-        <p>
-          <a href="/add/"> Add new resource </a>
-        </p>
-        <p>
-          <a href="/resources/"> List of resources </a>
-        </p>
+        <form method="POST" action="/resources/{{resource.id}}/">
+          {% csrf_token %}
+          <input type="submit" value="delete" />
+        </form>
       </p>
       <p>
         <form method="GET" action="/logout/">

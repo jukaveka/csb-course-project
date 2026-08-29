@@ -2,18 +2,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
     <head lang="en">
         <meta charset="UTF-8" />
-        <title>Homepage</title>
+        <title> Resources </title>
     </head>
     <body>
-      <h1> Töttöröö </h1>
-      <p>
-        <p>
-          <a href="/add/"> Add new resource </a>
-        </p>
-        <p>
-          <a href="/resources/"> List of resources </a>
-        </p>
-      </p>
+      <a href="/"> Back to home </a>
+      <h1> List of added resources </h1>
+      <ul>
+        {% for resource in resources %}
+          <li>
+            <a href="/resources/{{ resource.id }}"> {{ resource.name }} </a>
+          </li>
+        {% endfor %}
+      </ul>
       <p>
         <form method="GET" action="/logout/">
           {% csrf_token %}
