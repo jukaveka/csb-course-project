@@ -87,7 +87,7 @@ def addView(request):
     if response.status_code == 200:
       user = User.objects.get(username=request.user)
       file_name = name.replace(" ", "_")
-      directory = "static/images/user/" + str(user.id)
+      directory = "media/images/user/" + str(user.id)
       extension = response.headers["content-type"].split("/")[1]
 
       if os.path.exists(directory) == False:
@@ -122,8 +122,7 @@ def resourcesView(request):
 def resourceView(request, resource_id):
   if request.method == "GET":
     resource = Resource.objects.get(pk=resource_id)
-
-    response = requests.get(resource.url)
+    resource.file_path = "/" + resource.file_path
 
     return render(request, "pages/resource.html", context={ "resource": resource })
 

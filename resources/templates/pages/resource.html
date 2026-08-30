@@ -7,7 +7,7 @@
     <body>
       <a href="/resources/"> Back to resources </a>
       <h3> {{ resource.name }} </h3>
-      <img src={{resource.url}} />
+      <img src="{{resource.file_path}}" />
       <p> {{ resource.notes }} </p>
       <p>
         <form method="POST" action="/resources/{{resource.id}}/">
