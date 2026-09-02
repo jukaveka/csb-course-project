@@ -14,20 +14,22 @@
 
       <h1> Add resource </h1>
 
+      <p style="color: red;"> {{ error }} </p>
+
       <p>
         <form method="POST" action="/add/" id="resource-form">
           {% csrf_token %}
 
           <p>
             <label for="url"> URL address to image resource </label> <br/>
-            <input type="text" name="url" id="url" required />
+            <input type="text" name="url" id="url" size="40" required />
           </p>
           <p>
 
           </p>
           <p>
             <label for="name"> Resource name </label> <br/>
-            <input type="text" name="name" id="name" required />
+            <input type="text" name="name" id="name" size="40" required />
           </p>
 
           <p>

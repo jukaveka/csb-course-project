@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 
 from django.contrib.auth.models import User
 from .models import Resource
+from .utils import get_path_file_type, get_user_directory, get_file_path
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.password_validation import validate_password
@@ -10,7 +11,10 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
-import requests
+from urllib.request import urlopen, Request
+from urllib.error import URLError
+from urllib.parse import urlsplit
+from mimetypes import guess_extension, types_map
 import os
 
 @login_required
@@ -80,29 +84,37 @@ def addView(request):
     url = request.POST.get("url")
     notes = request.POST.get("notes")
 
-    ''' CHECK AND VALIDATIONS FOR URL (SSRF) '''
+    url_components = urlsplit(url)
+    file_type = get_path_file_type(url_components.path)
 
-    response = requests.get(url=url)
+    if url_components.scheme not in ["http", "https"] or file_type != "image":
+      return render(request, "pages/add.html", { "error": "Invalid URL" })
 
-    if response.status_code == 200:
-      user = User.objects.get(username=request.user)
-      file_name = name.replace(" ", "_")
-      directory = "media/images/user/" + str(user.id)
-      extension = response.headers["content-type"].split("/")[1]
+    try:
+      image_request = Request(url)
+      image_request.add_header("User-Agent", "Mozilla/5.0")
+      image_response = urlopen(image_request)
+      content = image_response.read()
+    except URLError as err:
+      print(err.reason)
+      return render(request, "pages/add.html", { "error": "There was an issue with fetching image from the URL" })
 
-      if os.path.exists(directory) == False:
-          os.makedirs(directory)
+    directory = get_user_directory(request.user)
+    file_path = get_file_path(name, directory, image_response.headers["content-type"])
 
-      file_path = directory + "/" + file_name + "." + extension
+    if os.path.exists(directory) == False:
+        os.makedirs(directory)
 
-      with open(file_path, "wb") as file:
-        file.write(response.content)
+    with open(file_path, "wb") as file:
+      file.write(content)
 
+    try:
       resource = Resource(name=name, url=url, notes=notes, file_path=file_path, user=request.user, is_active=True)
       resource.save()
       return redirect("resources")
-
-    return redirect("home")
+    except err:
+      print(err)
+      return render(request, "pages/add.html", { "error": "There was an issue with saving the resource" })
 
   if request.method == "GET":
     return render(request, "pages/add.html")
