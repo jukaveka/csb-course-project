@@ -14,7 +14,6 @@ from django.db import IntegrityError
 from urllib.request import urlopen, Request
 from urllib.error import URLError
 from urllib.parse import urlsplit
-from mimetypes import guess_extension, types_map
 import os
 
 @login_required
@@ -49,14 +48,14 @@ def signupView(request):
     passwordVerify = request.POST.get("passwordVerify")
 
     if password != passwordVerify:
-      return render(request, "pages/signup.html", context={"error": "Passwords do not match"}, content_type="text/html")
+      return render(request, "pages/signup.html", context={"error": "Passwords do not match"}, content_type="text/html", status=400)
 
     '''
     try:
       validate_password(password)
     except ValidationError as err:
       print(err)
-      return render(request, "pages/signup.html", context={"error": "Weak password"}, content_type="text/html")
+      return render(request, "pages/signup.html", context={"error": "Weak password"}, content_type="text/html", status=400)
     '''
 
     try:
@@ -64,7 +63,7 @@ def signupView(request):
       login(request, user)
     except IntegrityError as err:
       print("Integrity error", err.args)
-      return render(request, "pages/signup.html", context={"error": "Username already in use"}, content_type="text/html")
+      return render(request, "pages/signup.html", context={"error": "Username already in use"}, content_type="text/html", status=400)
 
     return redirect("home")
 
@@ -88,7 +87,7 @@ def addView(request):
     file_type = get_path_file_type(url_components.path)
 
     if url_components.scheme not in ["http", "https"] or file_type != "image":
-      return render(request, "pages/add.html", { "error": "Invalid URL" })
+      return render(request, "pages/add.html", { "error": "Invalid URL" }, status=400)
 
     try:
       image_request = Request(url)
@@ -97,7 +96,7 @@ def addView(request):
       content = image_response.read()
     except URLError as err:
       print(err.reason)
-      return render(request, "pages/add.html", { "error": "There was an issue with fetching image from the URL" })
+      return render(request, "pages/add.html", { "error": "There was an issue with fetching image from the URL. Please confirm URL given is valid" }, status=400)
 
     directory = get_user_directory(request.user)
     file_path = get_file_path(name, directory, image_response.headers["content-type"])
