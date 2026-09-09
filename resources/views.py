@@ -121,11 +121,29 @@ def addView(request):
 
 @login_required
 def resourcesView(request):
-  data = Resource.objects.filter(user=request.user, is_active=True)
-  resources = [resource for resource in data.values("id", "name")]
+  filter = request.GET.get("filter")
+  if filter == None:
+    data = Resource.objects.filter(user=request.user, is_active=True)
+    resources = [resource for resource in data.values("id", "name")]
+  else:
+    user = User.objects.get(username=request.user)
+    user_id = str(user.id)
+    filteredData = Resource.objects.raw(
+      """
+      SELECT id, name
+      FROM resources_resource
+      WHERE is_active = True
+      AND user_id = """ + str(user_id) + """
+      AND name LIKE '%%""" + filter + """%%'
+      """
+    )
+
+    resources = list(filteredData)
+
   context = {
     "resources": resources
   }
+
   return render(request, "pages/list.html", context)
 
 

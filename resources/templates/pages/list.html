@@ -5,8 +5,15 @@
         <title> Resources </title>
     </head>
     <body>
+
       <a href="/"> Back to home </a>
       <h1> List of added resources </h1>
+
+      <form action="/resources/" method="GET">
+        <input type="text" name="filter" id="filter" size="75" />
+        <button type="submit" > Filter </button>
+      </form>
+
       <ul>
         {% for resource in resources %}
           <li>
@@ -14,11 +21,13 @@
           </li>
         {% endfor %}
       </ul>
+
       <p>
         <form method="GET" action="/logout/">
           {% csrf_token %}
           <input type="submit" value="logout" />
         </form>
       </p>
+
     </body>
 </html>
