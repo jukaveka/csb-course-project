@@ -9,10 +9,13 @@
       <a href="/"> Back to home </a>
       <h1> List of added resources </h1>
 
+
       <form action="/resources/" method="GET">
         <input type="text" name="filter" id="filter" size="75" />
         <button type="submit" > Filter </button>
       </form>
+      <br/>
+      <a href="/resources/"> <button>Clear filter</button></a>
 
       <ul>
         {% for resource in resources %}

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 
 from django.contrib.auth.models import User
 from .models import Resource
-from .utils import get_path_file_type, get_user_directory, get_file_path
+from .utils import get_path_file_type, get_user_directory, get_file_path, get_all_resources, get_filtered_resources, get_filtered_resources_secure
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.password_validation import validate_password
@@ -123,22 +123,17 @@ def addView(request):
 def resourcesView(request):
   filter = request.GET.get("filter")
   if filter == None:
-    data = Resource.objects.filter(user=request.user, is_active=True)
-    resources = [resource for resource in data.values("id", "name")]
+    resources = get_all_resources(request.user)
   else:
-    user = User.objects.get(username=request.user)
-    user_id = str(user.id)
-    filteredData = Resource.objects.raw(
-      """
-      SELECT id, name
-      FROM resources_resource
-      WHERE is_active = True
-      AND user_id = """ + str(user_id) + """
-      AND name LIKE '%%""" + filter + """%%'
-      """
-    )
+    resources = get_filtered_resources(request.user, filter)
 
-    resources = list(filteredData)
+    '''
+    Raw SQL utility function where filter is passed as parameter
+    resources = get_filtered_resources_secure(request.user, filter)
+
+    Django ORM query including filter
+    resources = list(Resource.objects.filter(user=request.user, is_active=True, name__icontains=filter))
+    '''
 
   context = {
     "resources": resources

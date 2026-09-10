@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from .models import Resource
 from mimetypes import guess_extension, types_map
 
 def get_path_file_type(path):
@@ -20,3 +21,39 @@ def get_file_path(resource_name, user_directory, content_type):
   file_path = user_directory + file_name + extension
 
   return file_path
+
+def get_all_resources(request_user):
+    data = Resource.objects.filter(user=request_user, is_active=True)
+    resources = [resource for resource in data.values("id", "name")]
+    return resources
+
+def get_filtered_resources(request_user, filter):
+    user = User.objects.get(username=request_user)
+    user_id = str(user.id)
+    filteredData = Resource.objects.raw(
+      """
+      SELECT id, name
+      FROM resources_resource
+      WHERE is_active = True
+      AND user_id = """ + str(user_id) + """
+      AND name LIKE '%%""" + filter + """%%'
+      """
+    )
+
+    return list(filteredData)
+
+def get_filtered_resources_secure(request_user, filter):
+    user = User.objects.get(username=request_user)
+    user_id = str(user.id)
+    filter = "%" + filter + "%"
+    filteredData = Resource.objects.raw(
+      """
+      SELECT id, name
+      FROM resources_resource
+      WHERE is_active = True
+      AND user_id = %s
+      AND name LIKE %s
+      """, [user_id, filter]
+    )
+
+    return list(filteredData)
