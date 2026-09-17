@@ -9,6 +9,7 @@
       <a href="/"> Back to home </a>
       <h1> List of added resources </h1>
 
+      <p style="color: red;"> {{ error }} </p>
 
       <form action="/resources/" method="GET">
         <input type="text" name="filter" id="filter" size="75" />
@@ -28,6 +29,7 @@
       <p>
         <form method="GET" action="/logout/">
           {% csrf_token %}
+          <p> You are logged in as {{ user.get_username }}</p>
           <input type="submit" value="logout" />
         </form>
       </p>

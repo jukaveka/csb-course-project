@@ -6,20 +6,28 @@
     </head>
     <body>
       <a href="/resources/"> Back to resources </a>
+
       <h3> {{ resource.name }} </h3>
+      <p> Owned by {{ resource.user }}</p>
+
       <img src="{{resource.file_path}}" />
+
       <p> {{ resource.notes }} </p>
+
       <p>
         <form method="POST" action="/resources/{{resource.id}}/">
           {% csrf_token %}
           <input type="submit" value="delete" />
         </form>
       </p>
+
       <p>
         <form method="GET" action="/logout/">
           {% csrf_token %}
+          <p> You are logged in as {{ user.get_username }}</p>
           <input type="submit" value="logout" />
         </form>
       </p>
+
     </body>
 </html>

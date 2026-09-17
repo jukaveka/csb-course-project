@@ -127,3 +127,7 @@ LOGIN_URL = "/login/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 MEDIA_URL = "media/"
+
+import mimetypes
+
+mimetypes.add_type("image/webp", ".webp")
