@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
+from django.db.models import Model
 
 from urllib.request import urlopen, Request
 from urllib.error import URLError
@@ -131,6 +132,8 @@ def resourcesView(request):
     Raw SQL utility function where filter is passed as parameter
     resources = get_filtered_resources_secure(request.user, filter)
 
+    or
+
     Django ORM query including filter
     resources = list(Resource.objects.filter(user=request.user, is_active=True, name__icontains=filter))
     '''
@@ -145,13 +148,29 @@ def resourcesView(request):
 @login_required
 def resourceView(request, resource_id):
   if request.method == "GET":
-    resource = Resource.objects.get(pk=resource_id)
+
+    try:
+      resource = Resource.objects.get(pk=resource_id, is_active=True)
+
+      '''
+      resource = Resource.objects.get(pk=resource_id, user=request.user, is_active=True)
+      '''
+
+    except Resource.DoesNotExist as err:
+      print(err.args)
+      return render(request, "pages/list.html", context={ "error": "Resource not found" }, status=404)
+
     resource.file_path = "/" + resource.file_path
 
     return render(request, "pages/resource.html", context={ "resource": resource })
 
   if request.method == "POST":
-    resource = Resource.objects.get(pk=resource_id)
+    try:
+      resource = Resource.objects.get(pk=resource_id, user=request.user, is_active=True)
+    except Resource.DoesNotExist as err:
+      print(err.args)
+      return render(request, "pages/list.html", context={ "error": "Resource could not be deleted" })
+
     resource.is_active = False
     resource.save()
 
