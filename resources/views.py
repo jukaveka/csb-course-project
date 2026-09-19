@@ -73,8 +73,9 @@ def signupView(request):
 
 
 def logoutView(request):
-  logout(request)
-  return redirect("login")
+  if request.method == "POST":
+    logout(request)
+    return redirect("login")
 
 
 @login_required
@@ -169,7 +170,7 @@ def resourceView(request, resource_id):
       resource = Resource.objects.get(pk=resource_id, user=request.user, is_active=True)
     except Resource.DoesNotExist as err:
       print(err.args)
-      return render(request, "pages/list.html", context={ "error": "Resource could not be deleted" })
+      return render(request, "pages/list.html", context={ "error": "Resource could not be deleted" }, status=404)
 
     resource.is_active = False
     resource.save()
