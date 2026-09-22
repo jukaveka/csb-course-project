@@ -1,8 +1,17 @@
 from django.shortcuts import render, redirect
 
 from django.contrib.auth.models import User
-from .models import Resource
-from .utils import get_path_file_type, get_user_directory, get_file_path, get_all_resources, get_filtered_resources, get_filtered_resources_secure
+from .models import Resource, LoginAttempt
+from .utils import (
+  get_path_file_type,
+  get_user_directory,
+  get_file_path,
+  get_all_resources,
+  get_filtered_resources,
+  get_filtered_resources_secure,
+  get_client_ip_address,
+  user_login_restricted
+)
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.password_validation import validate_password
@@ -15,7 +24,14 @@ from django.db.models import Model
 from urllib.request import urlopen, Request
 from urllib.error import URLError
 from urllib.parse import urlsplit
+
+from datetime import datetime
+from pytz import timezone
+
 import os
+import logging
+logger = logging.getLogger(__name__)
+
 
 @login_required
 def homeView(request):
@@ -30,13 +46,53 @@ def loginView(request):
     username = request.POST.get("username")
     password = request.POST.get("password")
 
-    user = authenticate(request, username=username, password=password)
+    '''
+    ip = get_client_ip_address(request)
+    time = datetime.now(timezone("utc"))
+    attempt = LoginAttempt(time=time, ip_address=ip)
 
-    if user is not None:
-      login(request, user)
+    try:
+      attempted_user = User.objects.get(username=username)
+    except User.DoesNotExist as err:
+      logger.error(f"Error: {err.args}")
+      logger.error(f"Login attempt failure due to non-existent user")
+
+      attempt.user = None
+      attempt.successful_attempt = False
+      attempt.save()
+
+      return render(request, "pages/login.html", {"error": "login failed"}, status=401)
+
+    if user_login_restricted(attempted_user, ip):
+      logger.info("User login restricted due to 5 or more failed login attempts in last 15 minutes")
+      return render(request, "pages/login.html", {"error": "Too many failed logins in short time period"}, status=401)
+    '''
+
+    authenticated_user = authenticate(request, username=username, password=password)
+
+    if authenticated_user is not None:
+      login(request, authenticated_user)
+
+      '''
+      logger.info(f"User {username} login attempt successful")
+
+      attempt.user = authenticated_user
+      attempt.successful_attempt = True
+      attempt.save()
+      '''
+
       return redirect("home")
     else:
-      return render(request, "pages/login.html", {"error": "login failed"})
+      '''
+      logger.info(f"User {username} login attempt failed")
+      logger.error(f"Login attempt failure due to wrong password")
+
+      attempt.user = attempted_user
+      attempt.successful_attempt = False
+      attempt.save()
+      '''
+
+      return render(request, "pages/login.html", {"error": "login failed"}, status=401)
 
   if request.method == "GET":
     return render(request, "pages/login.html")

@@ -128,6 +128,29 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 MEDIA_URL = "media/"
 
-import mimetypes
+LOGGING = {
+  "version": 1,
+  "disable_existing_loggers": False,
+  "handlers": {
+    "file": {
+      "class": "logging.FileHandler",
+      "filename": "general.log",
+      "formatter": "standard",
+    },
+  },
+  "loggers": {
+    "resources.views": {
+      "level": "INFO",
+      "handlers": ["file"],
+    },
+  },
+  "formatters": {
+    "standard": {
+      "format": "{name} {levelname} {asctime} {module} {process:d} {thread:d} {message}",
+      "style": "{",
+    }
+  }
+}
 
+import mimetypes
 mimetypes.add_type("image/webp", ".webp")
