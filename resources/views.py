@@ -141,11 +141,13 @@ def addView(request):
     url = request.POST.get("url")
     notes = request.POST.get("notes")
 
+    '''
     url_components = urlsplit(url)
     file_type = get_path_file_type(url_components.path)
 
     if url_components.scheme not in ["http", "https"] or file_type != "image":
       return render(request, "pages/add.html", { "error": "Invalid URL" }, status=400)
+    '''
 
     try:
       image_request = Request(url)
